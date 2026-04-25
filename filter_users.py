@@ -2,64 +2,50 @@ import json
 
 
 def load_users():
+    """Load users from JSON file."""
     with open("users.json", "r") as file:
         return json.load(file)
 
 
-def filter_users_by_name(name):
+def filter_users(key, value):
+    """Generic filter function for users."""
     users = load_users()
+
     filtered_users = [
         user for user in users
-        if user.get("name", "").lower() == name.lower()
+        if str(user.get(key, "")).lower() == str(value).lower()
     ]
 
     for user in filtered_users:
         print(user)
 
 
-def filter_users_by_age(age):
-    users = load_users()
-    filtered_users = [
-        user for user in users
-        if user.get("age") == age
-    ]
-
-    for user in filtered_users:
-        print(user)
-
-
-def filter_users_by_email(email):
-    with open("users.json", "r") as file:
-        users = json.load(file)
-
-    filtered_users = [
-        user for user in users
-        if user.get("email", "").lower() == email.lower()
-    ]
-
-    for user in filtered_users:
-        print(user)
+def get_age_input():
+    """Safely get age input from user."""
+    try:
+        return int(input("Enter age: ").strip())
+    except ValueError:
+        print("Age must be a number.")
+        return None
 
 
 if __name__ == "__main__":
-    filter_option = input(
+    option = input(
         "Filter by 'name', 'age', or 'email': "
     ).strip().lower()
 
-    if filter_option == "name":
-        name_to_search = input("Enter name: ").strip()
-        filter_users_by_name(name_to_search)
+    if option == "name":
+        value = input("Enter name: ").strip()
+        filter_users("name", value)
 
-    elif filter_option == "age":
-        try:
-            age_to_search = int(input("Enter age: ").strip())
-            filter_users_by_age(age_to_search)
-        except ValueError:
-            print("Age must be a number.")
+    elif option == "age":
+        value = get_age_input()
+        if value is not None:
+            filter_users("age", value)
 
-    elif filter_option == "email":
-        email_to_search = input("Enter email: ").strip()
-        filter_users_by_email(email_to_search)
+    elif option == "email":
+        value = input("Enter email: ").strip()
+        filter_users("email", value)
 
     else:
         print("Filtering by that option is not supported.")
